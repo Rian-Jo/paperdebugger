@@ -31,6 +31,7 @@
   - [Backend Build](#backend-build)
   - [Frontend Extension Build](#frontend-extension-build)
 - [🏗️ Architecture Overview](#️-architecture-overview)
+- [🤝 Contributing](#-contributing)
 
 ## ✨ Features
 
@@ -180,3 +181,17 @@ zip -r paperdebugger-extension.zip *
 3. Click "Load unpacked" and select the `webapp/_webapp/dist` directory
    - Or drag the `paperdebugger-extension.zip` file into the extensions page
 
+## 🤝 Contributing
+
+We welcome contributions! Please review the contributor guide and use the templates:
+
+- PR template: `.github/pull_request_template.md`
+- Issue templates: `.github/ISSUE_TEMPLATE/`
+
+Before opening a PR:
+
+```bash
+make gen fmt lint test
+```
+
+Conventional Commits are encouraged (e.g., `feat:`, `fix:`, `docs:`, `chore:`). Avoid committing secrets; configure via `.env` based on `.env.example`. For UI changes, include screenshots/GIFs.

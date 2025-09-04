@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/PaperDebugger/paperdebugger#readme
+    about: Review setup and development docs before filing.
