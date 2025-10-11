@@ -12,6 +12,7 @@ import (
 	"paperdebugger/internal/libs/metadatautil"
 	"paperdebugger/internal/libs/shared"
 	authv1 "paperdebugger/pkg/gen/api/auth/v1"
+	billingv1 "paperdebugger/pkg/gen/api/billing/v1"
 	chatv1 "paperdebugger/pkg/gen/api/chat/v1"
 	commentv1 "paperdebugger/pkg/gen/api/comment/v1"
 	projectv1 "paperdebugger/pkg/gen/api/project/v1"
@@ -82,6 +83,12 @@ func (s *Server) Run(addr string) {
 	err = chatv1.RegisterChatServiceHandler(context.Background(), mux, client)
 	if err != nil {
 		s.logger.Fatalf("failed to register chat service grpc gateway: %v", err)
+		return
+	}
+
+	err = billingv1.RegisterBillingServiceHandler(context.Background(), mux, client)
+	if err != nil {
+		s.logger.Fatalf("failed to register billing service grpc gateway: %v", err)
 		return
 	}
 	err = userv1.RegisterUserServiceHandler(context.Background(), mux, client)

@@ -11,6 +11,7 @@ import (
 	"paperdebugger/internal/libs/shared"
 	"paperdebugger/internal/services"
 	authv1 "paperdebugger/pkg/gen/api/auth/v1"
+	billingv1 "paperdebugger/pkg/gen/api/billing/v1"
 	chatv1 "paperdebugger/pkg/gen/api/chat/v1"
 	commentv1 "paperdebugger/pkg/gen/api/comment/v1"
 	projectv1 "paperdebugger/pkg/gen/api/project/v1"
@@ -51,7 +52,8 @@ func (s *GrpcServer) grpcUnaryAuthInterceptor(
 	handler grpc.UnaryHandler,
 ) (interface{}, error) {
 	if strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/LoginBy") ||
-		strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/RefreshToken") {
+		strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/RefreshToken") ||
+		info.FullMethod == "/billing.v1.BillingService/HandleWebhook" {
 		return handler(ctx, req)
 	}
 
@@ -70,7 +72,8 @@ func (s *GrpcServer) grpcStreamAuthInterceptor(
 	handler grpc.StreamHandler,
 ) error {
 	if strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/LoginBy") ||
-		strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/RefreshToken") {
+		strings.HasPrefix(info.FullMethod, "/auth.v1.AuthService/RefreshToken") ||
+		info.FullMethod == "/billing.v1.BillingService/HandleWebhook" {
 		return handler(srv, ss)
 	}
 
@@ -100,6 +103,7 @@ func NewGrpcServer(
 	userService *services.UserService,
 	cfg *cfg.Cfg,
 	authServer authv1.AuthServiceServer,
+	billingServer billingv1.BillingServiceServer,
 	chatServer chatv1.ChatServiceServer,
 	userServer userv1.UserServiceServer,
 	projectServer projectv1.ProjectServiceServer,
@@ -114,6 +118,7 @@ func NewGrpcServer(
 	)
 
 	authv1.RegisterAuthServiceServer(grpcServer.Server, authServer)
+	billingv1.RegisterBillingServiceServer(grpcServer.Server, billingServer)
 	chatv1.RegisterChatServiceServer(grpcServer.Server, chatServer)
 	userv1.RegisterUserServiceServer(grpcServer.Server, userServer)
 	projectv1.RegisterProjectServiceServer(grpcServer.Server, projectServer)

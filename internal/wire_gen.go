@@ -10,6 +10,7 @@ import (
 	"github.com/google/wire"
 	"paperdebugger/internal/api"
 	"paperdebugger/internal/api/auth"
+	"paperdebugger/internal/api/billing"
 	"paperdebugger/internal/api/chat"
 	"paperdebugger/internal/api/comment"
 	"paperdebugger/internal/api/project"
@@ -33,6 +34,8 @@ func InitializeApp() (*api.Server, error) {
 	userService := services.NewUserService(dbDB, cfgCfg, loggerLogger)
 	tokenService := services.NewTokenService(dbDB, cfgCfg, loggerLogger)
 	authServiceServer := auth.NewAuthServer(tokenService, userService, cfgCfg, loggerLogger)
+	billingService := services.NewBillingService(dbDB, cfgCfg, loggerLogger)
+	billingServiceServer := billing.NewBillingServer(billingService, loggerLogger, cfgCfg)
 	projectService := services.NewProjectService(dbDB, cfgCfg, loggerLogger)
 	reverseCommentService := services.NewReverseCommentService(dbDB, cfgCfg, loggerLogger, projectService)
 	aiClient := client.NewAIClient(dbDB, reverseCommentService, projectService, cfgCfg, loggerLogger)
@@ -42,7 +45,7 @@ func InitializeApp() (*api.Server, error) {
 	userServiceServer := user.NewUserServer(userService, promptService, cfgCfg, loggerLogger)
 	projectServiceServer := project.NewProjectServer(projectService, loggerLogger, cfgCfg)
 	commentServiceServer := comment.NewCommentServer(projectService, chatService, reverseCommentService, loggerLogger, cfgCfg)
-	grpcServer := api.NewGrpcServer(userService, cfgCfg, authServiceServer, chatServiceServer, userServiceServer, projectServiceServer, commentServiceServer)
+	grpcServer := api.NewGrpcServer(userService, cfgCfg, authServiceServer, billingServiceServer, chatServiceServer, userServiceServer, projectServiceServer, commentServiceServer)
 	oAuthService := services.NewOAuthService(dbDB, cfgCfg, loggerLogger)
 	oAuthHandler := auth.NewOAuthHandler(oAuthService)
 	ginServer := api.NewGinServer(cfgCfg, oAuthHandler)
@@ -52,4 +55,4 @@ func InitializeApp() (*api.Server, error) {
 
 // wire.go:
 
-var Set = wire.NewSet(api.NewServer, api.NewGrpcServer, api.NewGinServer, auth.NewOAuthHandler, auth.NewAuthServer, chat.NewChatServer, user.NewUserServer, project.NewProjectServer, comment.NewCommentServer, client.NewAIClient, services.NewReverseCommentService, services.NewChatService, services.NewTokenService, services.NewUserService, services.NewProjectService, services.NewPromptService, services.NewOAuthService, cfg.GetCfg, logger.GetLogger, db.NewDB)
+var Set = wire.NewSet(api.NewServer, api.NewGrpcServer, api.NewGinServer, auth.NewOAuthHandler, auth.NewAuthServer, chat.NewChatServer, user.NewUserServer, project.NewProjectServer, comment.NewCommentServer, client.NewAIClient, services.NewReverseCommentService, services.NewChatService, services.NewTokenService, services.NewUserService, services.NewProjectService, services.NewPromptService, services.NewOAuthService, services.NewBillingService, billing.NewBillingServer, cfg.GetCfg, logger.GetLogger, db.NewDB)

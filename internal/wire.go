@@ -6,6 +6,7 @@ package internal
 import (
 	"paperdebugger/internal/api"
 	"paperdebugger/internal/api/auth"
+	"paperdebugger/internal/api/billing"
 	"paperdebugger/internal/api/chat"
 	"paperdebugger/internal/api/comment"
 	"paperdebugger/internal/api/project"
@@ -40,6 +41,8 @@ var Set = wire.NewSet(
 	services.NewProjectService,
 	services.NewPromptService,
 	services.NewOAuthService,
+	services.NewBillingService,
+	billing.NewBillingServer,
 
 	cfg.GetCfg,
 	logger.GetLogger,

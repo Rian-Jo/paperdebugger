@@ -7,23 +7,30 @@ import (
 )
 
 type Cfg struct {
-	OpenAIAPIKey  string
-	JwtSigningKey string
+    OpenAIAPIKey  string
+    JwtSigningKey string
 
-	MongoURI string
+    MongoURI string
+
+    BillingProvider    string
+    StripeAPIKey       string
+    StripeWebhookSecret string
 }
 
 var cfg *Cfg
 
 func GetCfg() *Cfg {
-	_ = godotenv.Load()
-	cfg = &Cfg{
-		OpenAIAPIKey:  os.Getenv("OPENAI_API_KEY"),
-		JwtSigningKey: os.Getenv("JWT_SIGNING_KEY"),
-		MongoURI:      mongoURI(),
-	}
+    _ = godotenv.Load()
+    cfg = &Cfg{
+        OpenAIAPIKey:  os.Getenv("OPENAI_API_KEY"),
+        JwtSigningKey: os.Getenv("JWT_SIGNING_KEY"),
+        MongoURI:      mongoURI(),
+        BillingProvider: os.Getenv("PD_BILLING_PROVIDER"),
+        StripeAPIKey: os.Getenv("STRIPE_API_KEY"),
+        StripeWebhookSecret: os.Getenv("STRIPE_WEBHOOK_SECRET"),
+    }
 
-	return cfg
+    return cfg
 }
 
 func mongoURI() string {
