@@ -73,9 +73,11 @@ func NewDynamicTool(db *db.DB, projectService *services.ProjectService, toolSche
 		projectService:   projectService,
 		coolDownTime:     5 * time.Minute,
 		baseURL:          baseURL,
-		client:           &http.Client{},
-		schema:           toolSchema.InputSchema,
-		sessionID:        sessionID, // Store the session ID for reuse
+		client: &http.Client{
+			Timeout: 2 * time.Minute,
+		},
+		schema:    toolSchema.InputSchema,
+		sessionID: sessionID, // Store the session ID for reuse
 	}
 }
 
@@ -155,7 +157,7 @@ func (t *DynamicTool) executeTool(args map[string]interface{}) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to read response: %w", err)
 	}
-	
+
 	// Parse response (assuming stream format)
 	lines := strings.Split(string(body), "\n")
 	lines = lo.Filter(lines, func(line string, _ int) bool {
